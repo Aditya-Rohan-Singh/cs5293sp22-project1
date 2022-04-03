@@ -9,6 +9,7 @@ spacy = "*"
 dateparser = "*"
 boto3 = "*"
 bs4 = "*"
+click = "==8.0.0"
 
 [dev-packages]
 

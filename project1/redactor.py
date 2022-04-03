@@ -89,10 +89,18 @@ if __name__ == '__main__':
     parser.add_argument("--address", action = 'store_true', required=True,  help="Redact address")
     parser.add_argument("--concept", type=str, required=True, action='append', help="Type of Concept")
     parser.add_argument("--output", type=str, required=True,  help="Location of output files")
-    parser.add_argument("--stats", type=str, required=True, help="File name for stats")
+    parser.add_argument("--stats", type=str, required=True, help="File name for stats (stdout or stderr) or file location")
     args = parser.parse_args()
     if args.input and args.output and args.stats and args.concept:
         if os.path.exists(args.output):
-            main(args.input,args.output,args.concept,args.stats)
+            if os.path.exists(args.stats):
+                stats = args.stats + '/stdout'
+                print(stats)
+                main(args.input,args.output,args.concept,stats)
+            else:
+                if(args.stats == 'stdout' or args.stats == 'stderr'):
+                    main(args.input,args.output,args.concept,args.stats)
+                else:
+                    print("Wrong stats file name or location. Please provide correct location or file name")
         else:
             print("Output path does not exists. Please provide correct path")

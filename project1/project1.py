@@ -6,12 +6,14 @@ import warnings
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen as uReq
 from urllib.error import HTTPError
+#import en_core_web_md
 
 warnings.filterwarnings(
     "ignore",
     message="The localize method is no longer necessary, as this time zone supports the fold attribute",
 )
 nlp = spacy.load('en_core_web_sm')
+
 
 def input_file_name(type):
     input_files=glob.glob(type)
@@ -27,7 +29,7 @@ def read_inputfiles(input):
     f.close()
 
 def redact_sentence(sentence,syn_list):
-    
+    #nlp = en_core_web_md.load()
     counter = 0
     count_phone = 0
     count_date = 0
