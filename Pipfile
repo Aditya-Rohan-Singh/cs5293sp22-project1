@@ -8,6 +8,7 @@ pytest = "*"
 spacy = "*"
 dateparser = "*"
 boto3 = "*"
+bs4 = "*"
 
 [dev-packages]
 
