@@ -15,7 +15,7 @@ def main(input,output,concepts,stats):
     syn_list.extend(concepts)
     for concept in concepts:
         syn_list.extend(find_syn(concept))
-    print("Concept Words: ",syn_list,"\n\n")
+    print("Concept Words: ",len(syn_list),"\n\n")
     
     #Loop to cycle through multiple input types
     for file_type in input:

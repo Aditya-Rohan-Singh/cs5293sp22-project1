@@ -77,7 +77,7 @@ def redact_sentence(sentence,syn_list):
                 count_gender = count_gender + count
         
         #Remove address
-        sentence, count = re.subn(r'[0-9]{1-4} .+, .+ [A-Z]{2} [0-9]{5}',"\u2588",sentence)
+        sentence, count = re.subn(r'\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}',"\u2588",sentence)
         count_address = count_address + count
 
         #Removes names
