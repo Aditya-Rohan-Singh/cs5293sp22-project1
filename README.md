@@ -223,3 +223,52 @@ main(input,output,concepts,stats)
 Test Cases
 ==========
 
+Input files : inputfile1.txt, inputfile2.txt, inputfile3.txt
+
+Warnings can be ignored. Not sure how to fix them.
+
+input()
+-------
+=> Made input_type "tests/ * .txt" as fixture (Remove spaces)
+
+test_input_file_name(input):
+---------------------------
+=> Takes input_type as argument.
+
+=> Function input_file_name() returns list of files under the input_type
+
+=> Length of list of filenames checked to be 3 or not.
+
+test_read_inputfiles(input):
+---------------------------
+=> Takes input_type as argument
+
+=> Function input_file_name() returns list of files under the input_type
+
+=> Each file name is iterated and function read_inputfiles() is called with filename as argument.
+
+=> Each returns each file as a list of sentences.
+
+=> Check if the returned list of sentences is greated than 0.
+
+test_find_syn():
+----------------
+=> Define concept as 'Receipt'
+
+=> calls function find_syn() with concept as argument.
+
+=> Check if number of values returned with the concept is 31. Total synonyms is 30.
+
+test_redact_sentence(input):
+----------------------------
+=> Takes input_type as argument
+
+=> Function input_file_name() returns list of files under the input_type
+
+=> Each file name is iterated and function read_inputfiles() is called with filename as argument.
+
+=> Each returns each file as a list of sentences.
+
+=> Each sentence is passed through the redacted_sentence function which returns a redacted sentence.
+
+=> Check if the value of returned value is greater than 0. 
