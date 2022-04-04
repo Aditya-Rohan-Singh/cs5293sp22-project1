@@ -162,8 +162,9 @@ find_syn(word)
 
 Redactor.py
 ===========
+=> Import all the functions from project1.py
 
-__main__
+"__main__"
 ---------
 => Arguments input, concept, output and stats are given with values.
 
@@ -181,4 +182,44 @@ __main__
 
 main(input,output,concepts,stats)
 ---------------------------------
- 
+
+=> Prints the output folder locations
+
+=> Open the stats file in write mode
+
+=> Iterates through the list of concept inputs and calls the imported find_syn() function to get a list of synonyms. Creates a single list of synonyms for all list of concepts.
+
+=> Iterates through the list of input values.
+
+=> Calls the imported input_file_name() which returns a list of filenames based on the input value.
+
+=> If there are no files under the input value, returns values no files found and moves to next input value.
+
+=> If Files found under input value, iterates through each filename from the list of filenames.
+
+=> Uses the filename to create the output file name with .redacted extension.
+
+=> Call imported function read_inputfile which converts the input filename into a list of sentences.
+
+=> Check if the list of sentences is empty or not. If empty then no redaction needed. Otherwise the progam proceeds.
+
+=> Add the output location to the new redacted file and open it in write mode.
+
+=> Write the new file name into stats file
+
+=> It calls imported function redacted_sentence which returns the the redacted sentence with count of no. of differnt values that were redacted.
+
+=> The sentence is written into the open redacted file. 
+
+=> Add the count to the total count of the file
+
+=> Close the file
+
+=> Write the total count of redacted terms and their type for each file into the stats file
+
+=> Close the stats file
+
+
+Test Cases
+==========
+
