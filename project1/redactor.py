@@ -5,7 +5,7 @@ import re
 import os.path
 from project1 import input_file_name, read_inputfiles, redact_sentence, find_syn
 
-def main(input,output,concepts,stats):
+def main(input,output,concepts,stats,flags):
     print("Output Folder Location:",output,"\n\n")
     print("stats: ",stats,"\n\n") 
     #Opening Stats file
@@ -39,11 +39,11 @@ def main(input,output,concepts,stats):
                 final_count_gender = 0
                 final_count_name = 0
                 final_count_address = 0
-                if re.search('.',str(filename)):
-                    new_filename = filename.split('.')[0] + '.redacted'
-                else:
-                    new_filename = filename + '.redacted'
+                final_count = [0,0,0,0,0,0]
+
+                new_filename = filename + '.redacted'
                 list_sentences = read_inputfiles(filename)
+                
                 if len(list_sentences) == 0:
                     print("Empty File. No Redaction Needed\n\n")
                 else:
@@ -54,25 +54,26 @@ def main(input,output,concepts,stats):
                         std.write(new_filename)
                         std.write("\n-----------------\n")
                     for single_sentence in list_sentences:
-                        redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = redact_sentence(single_sentence,syn_list)
+                        #redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = redact_sentence(single_sentence,syn_list,flags)
+                        redacted_sentence, stats_count = redact_sentence(single_sentence,syn_list,flags)
                         write_file.write(redacted_sentence)
                         write_file.write('\n')
-                        final_count_concept = final_count_concept + count_concept
-                        final_count_phone = final_count_phone + count_phone
-                        final_count_date = final_count_date + count_date
-                        final_count_gender = final_count_gender + count_gender
-                        final_count_address = final_count_address + count_address
-                        final_count_name = final_count_name + count_name
+                        final_count[0] = final_count[0] + stats_count[0]
+                        final_count[1] = final_count[1] + stats_count[1]
+                        final_count[2] = final_count[2] + stats_count[2]
+                        final_count[3] = final_count[3] + stats_count[3]
+                        final_count[4] = final_count[4] + stats_count[4]
+                        final_count[5] = final_count[5] + stats_count[5]
                         #print(redacted_sentence)
                     write_file.write('\n')
                     write_file.close()
                     print("Redacted File Name:",new_filename,"\n\n")
-                    stringdata1 = "Total concept related words: " + str(final_count_concept) + "\n"
-                    stringdata2 = "Total Phone Numbers: " + str(final_count_phone) + "\n"
-                    stringdata3 = "Total Date: " + str(final_count_date) + "\n"
-                    stringdata4 = "Total Gender: " + str(final_count_gender) + "\n"
-                    stringdata5 = "Total address: " + str(final_count_address) + "\n"
-                    stringdata6 = "Total Name: " + str(final_count_name) + "\n"
+                    stringdata1 = "Total concept related words: " + str(final_count[0]) + "\n"
+                    stringdata2 = "Total Phone Numbers: " + str(final_count[1]) + "\n"
+                    stringdata3 = "Total Date: " + str(final_count[2]) + "\n"
+                    stringdata4 = "Total Gender: " + str(final_count[3]) + "\n"
+                    stringdata5 = "Total address: " + str(final_count[4]) + "\n"
+                    stringdata6 = "Total Name: " + str(final_count[5]) + "\n"
                     if(stats == "stdout" or stats == "stderr"):
                         if(stats == 'stdout'):
                             sys.stdout.write(stringdata1)
@@ -102,17 +103,28 @@ def main(input,output,concepts,stats):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Program to redact documents")
     parser.add_argument("--input", type=str, required=True, action='append', help="Type of Input files")
-    parser.add_argument("--names", action = 'store_true', required=True,  help="Redact Names")
-    parser.add_argument("--dates", action = 'store_true', required=True,  help="Redact dates")
-    parser.add_argument("--phones", action = 'store_true', required=True,  help="Redact phones")
-    parser.add_argument("--genders", action = 'store_true', required=True,  help="Redact genders")
-    parser.add_argument("--address", action = 'store_true', required=True,  help="Redact address")
+    parser.add_argument("--names", action = 'store_true', required=False,  help="Redact Names")
+    parser.add_argument("--dates", action = 'store_true', required=False,  help="Redact dates")
+    parser.add_argument("--phones", action = 'store_true', required=False,  help="Redact phones")
+    parser.add_argument("--genders", action = 'store_true', required=False,  help="Redact genders")
+    parser.add_argument("--address", action = 'store_true', required=False,  help="Redact address")
     parser.add_argument("--concept", type=str, required=True, action='append', help="Type of Concept")
     parser.add_argument("--output", type=str, required=True,  help="Location of output files")
     parser.add_argument("--stats", type=str, required=True, help="File name for stats (stdout or stderr) or file location")
     args = parser.parse_args()
     if args.input and args.output and args.stats and args.concept:
         if os.path.exists(args.output):
-            main(args.input,args.output,args.concept,args.stats)
+            redaction_flags=[0,0,0,0,0]
+            if(args.names):
+                redaction_flags[0]=1
+            if(args.dates):
+                redaction_flags[1]=1
+            if(args.phones):
+                redaction_flags[2]=1
+            if(args.genders):
+                redaction_flags[3]=1
+            if(args.address):
+                redaction_flags[4]=1
+            main(args.input,args.output,args.concept,args.stats,redaction_flags)
         else:
             print("Output path does not exists. Please provide correct path")

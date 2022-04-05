@@ -7,6 +7,8 @@ import project1
 from project1 import project1
 import pytest
 
+
+
 @pytest.fixture()
 def input():
     input_type = "tests/*.txt"
@@ -32,11 +34,12 @@ def test_find_syn():
 def test_redact_sentence(input):
     input_files=project1.input_file_name(input)
     concept = 'receipt'
+    flags=[1,1,1,1,1]
     syn_list = []
     syn_list.extend(concept)
     syn_list.extend(project1.find_syn(concept))
     for filename in input_files:
         list_sentences = project1.read_inputfiles(filename)
         for sentence in list_sentences:
-            redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = project1.redact_sentence(sentence,syn_list)
-            assert len(redacted_sentence) >0
+            redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = project1.redact_sentence(sentence,syn_list, flags)
+            assert len(redacted_sentence) > 0
