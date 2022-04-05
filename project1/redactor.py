@@ -1,14 +1,16 @@
 
 import argparse
+import sys
 import re
 import os.path
 from project1 import input_file_name, read_inputfiles, redact_sentence, find_syn
 
 def main(input,output,concepts,stats):
     print("Output Folder Location:",output,"\n\n")
-    
+    print("stats: ",stats,"\n\n") 
     #Opening Stats file
-    std = open(stats,"w")
+    if(stats != 'stdout' or stats != 'stderr'):
+        std = open(stats,"w")
     
     #Creating Concept word list
     syn_list = []
@@ -30,7 +32,7 @@ def main(input,output,concepts,stats):
             print("-----------------------------")
             #Loop to cycle through each text file
             for filename in input_files:
-                print("Filename: ",filename)
+                print("\n\nFilename: ",filename)
                 final_count_concept = 0
                 final_count_phone = 0
                 final_count_date = 0
@@ -48,8 +50,9 @@ def main(input,output,concepts,stats):
                     file_location = output + "/" + new_filename
                     print(file_location)
                     write_file = open(file_location,"w")
-                    std.write(new_filename)
-                    std.write("\n-----------------\n")
+                    if(stats!="stdout" and stats!="stderr"):
+                        std.write(new_filename)
+                        std.write("\n-----------------\n")
                     for single_sentence in list_sentences:
                         redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = redact_sentence(single_sentence,syn_list)
                         write_file.write(redacted_sentence)
@@ -64,20 +67,37 @@ def main(input,output,concepts,stats):
                     write_file.write('\n')
                     write_file.close()
                     print("Redacted File Name:",new_filename,"\n\n")
-                    stringdata = "Total concept related words: " + str(final_count_concept) + "\n"
-                    std.write(stringdata)
-                    stringdata = "Total Phone Numbers: " + str(final_count_phone) + "\n"
-                    std.write(stringdata)
-                    stringdata = "Total Date: " + str(final_count_date) + "\n"
-                    std.write(stringdata)
-                    stringdata = "Total Gender: " + str(final_count_gender) + "\n"
-                    std.write(stringdata)
-                    stringdata = "Total address: " + str(final_count_address) + "\n"
-                    std.write(stringdata)
-                    stringdata = "Total Name: " + str(final_count_name) + "\n"
-                    std.write(stringdata)
-                    std.write("\n\n")
-    std.close()
+                    stringdata1 = "Total concept related words: " + str(final_count_concept) + "\n"
+                    stringdata2 = "Total Phone Numbers: " + str(final_count_phone) + "\n"
+                    stringdata3 = "Total Date: " + str(final_count_date) + "\n"
+                    stringdata4 = "Total Gender: " + str(final_count_gender) + "\n"
+                    stringdata5 = "Total address: " + str(final_count_address) + "\n"
+                    stringdata6 = "Total Name: " + str(final_count_name) + "\n"
+                    if(stats == "stdout" or stats == "stderr"):
+                        if(stats == 'stdout'):
+                            sys.stdout.write(stringdata1)
+                            sys.stdout.write(stringdata2)
+                            sys.stdout.write(stringdata3)
+                            sys.stdout.write(stringdata4)
+                            sys.stdout.write(stringdata5)
+                            sys.stdout.write(stringdata6)
+                        else:
+                            sys.stderr.write(stringdata1)
+                            sys.stderr.write(stringdata2)
+                            sys.stderr.write(stringdata3)
+                            sys.stderr.write(stringdata4)
+                            sys.stderr.write(stringdata5)
+                            sys.stderr.write(stringdata6)
+                    else:
+                        std.write(stringdata1)
+                        std.write(stringdata2)
+                        std.write(stringdata3)
+                        std.write(stringdata4)
+                        std.write(stringdata5)
+                        std.write(stringdata6)
+                        std.write("\n\n")
+    if(stats != 'stdout' or stats != 'stderr'):
+        std.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Program to redact documents")
@@ -93,14 +113,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.input and args.output and args.stats and args.concept:
         if os.path.exists(args.output):
-            if os.path.exists(args.stats):
-                stats = args.stats + '/stdout'
-                print(stats)
-                main(args.input,args.output,args.concept,stats)
-            else:
-                if(args.stats == 'stdout' or args.stats == 'stderr'):
-                    main(args.input,args.output,args.concept,args.stats)
-                else:
-                    print("Wrong stats file name or location. Please provide correct location or file name")
+            main(args.input,args.output,args.concept,args.stats)
         else:
             print("Output path does not exists. Please provide correct path")
