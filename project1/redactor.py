@@ -9,7 +9,7 @@ def main(input,output,concepts,stats,flags):
     print("Output Folder Location:",output,"\n\n")
     print("stats: ",stats,"\n\n") 
     #Opening Stats file
-    if(stats != 'stdout' or stats != 'stderr'):
+    if(stats != 'stdout' and stats != 'stderr'):
         std = open(stats,"w")
     
     #Creating Concept word list
@@ -97,7 +97,7 @@ def main(input,output,concepts,stats,flags):
                         std.write(stringdata5)
                         std.write(stringdata6)
                         std.write("\n\n")
-    if(stats != 'stdout' or stats != 'stderr'):
+    if(stats != 'stdout' and stats != 'stderr'):
         std.close()
 
 if __name__ == '__main__':

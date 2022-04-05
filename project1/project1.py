@@ -12,8 +12,7 @@ warnings.filterwarnings(
     "ignore",
     message="The localize method is no longer necessary, as this time zone supports the fold attribute",
 )
-#nlp = spacy.load('en_core_web_sm')
-
+nlp = en_core_web_md.load()
 
 def input_file_name(type):
     input_files=glob.glob(type)
@@ -29,7 +28,6 @@ def read_inputfiles(input):
     f.close()
 
 def redact_sentence(sentence,syn_list,flags):
-    nlp = en_core_web_md.load()
     counter = 0
     
     stats_count=[0,0,0,0,0,0]

@@ -40,6 +40,7 @@ Command: pipenv run python redactor.py --input <type of file (can be multiple)> 
 
 Argument Type:
 =============
+
 --input : Input file location and type of files. Can be multiple.
 
 --names, --dates, --phones, --genders, --address : Type of data being redacted. No input values needed.
@@ -61,7 +62,8 @@ Assumptions & Bugs:
 All the redacted values are being repaced by \u2588
 
 1. The original structure of the document is not retained. All files are converted into a list of sentence and the redaction process happens sentence wise and then written into the file.
-2. Below are the assumption and bugs for each argument type
+2. The usage of spacy does not assure 100% correctness. The library does not map everything to correct entity types always and some information might not get redacted correctly.
+3. Below are the assumption and bugs for each argument type
 
 
 Concept
@@ -88,8 +90,7 @@ Postal address are very difficult to pindown on what could or what could not be 
 
 Name
 ----
-All name types that spacy function tokenzie classifies as "Person" as entitype type is considered a name and redacted. There is some issue here as same name is being redacted and not redacted as well in the same email file.
-
+All name types that spacy function tokenzie classifies as "Person" as entitype type is considered a name and redacted. There is some issue here as same name is being redacted and not redacted as well in the same email file. Spaces between names are not removed after being redacted.
 Input
 ------
 Multiple input file types can be given. It is considered that the input file type will have an extension. This is used to create the output redacted file names. Even without extension there should not be an issue.
@@ -120,13 +121,15 @@ read_inputfiles(filename)
 
 => Converts the file into a list of sentences that can be accessed one by one which is then returned.
 
-redact_sentences(sentence, syn_list)
+redact_sentences(sentence, syn_list,flags)
 -----------------------------------
 => It has a sentence of the input file and the synonym list as input arguments.
 
 => If any word in the synonym list is found in the sentence. The whole sentence is redacted and returned. Otherwise the code processes to individual redaction.
 
 => Keeps a count of synonym matches even if the sentence is redacted.
+
+=> Based on the flag value it will check if the specific value needs to be redacted or not
 
 => It checks for 3 differnt formats of phone number and replaces them with redacted block. The formats and redacted block is mentioned in Assumptions.
 
