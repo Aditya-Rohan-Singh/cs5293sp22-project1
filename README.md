@@ -35,7 +35,7 @@ Command to Execute Project1:
 
 Location: ~/cs5293sp22-project1/project1/redactor.py
 
-Command: pipenv run python redactor.py --input <type of file (can be multiple)> --names --dates --phones --genders --address --concept <concept type (can be multiple)> --output <output file location> --stats <<filename/location>>
+Command: pipenv run python redactor.py --input <type of file (can be multiple)> --names --dates --phones --genders --address --concept <concept type (can be multiple)> --output <output file location> --stats <<filename/stdout/stderr>>
 
 
 Argument Type:
@@ -48,8 +48,7 @@ Argument Type:
 
 --output : Output location. It verifies if the location exists or not. Should be a valid location. Only single value can be given.
 
---stats : Either location or file name (stdout or stderr). If the file location is not valid or the names are not either stdout or stderr, Program will stop.
-
+--stats : Either a file name or specialized file name (stdout or stderr). 
 
 Command To execute Pytest:
 ==========================
@@ -101,7 +100,7 @@ Outfile file location should be valid location. If the location does not exist t
 
 Stats
 -----
-The stats input value should either be the file names "stdout" or "stderr" or a file location should be provided. If its a valid file location, then a file with default name stdout will be created.
+The stats input value should either be a file name or "stdout"/ "stderr". If its a file name, then it will store values in a file at the current directory location. If its stdout or stderr, it will print the output on commandline.
 
 
 Project1.py
@@ -172,20 +171,15 @@ Redactor.py
 
 => All the above arguments are required for the code to go forward.
 
-=> If the output location exists, then the code proceeds otherwise sends and error message and stops.
-
-=> If a location is given as input in stats, it will create a file called stdout at the given location and calls the main function with input, output, concept and stat values as arguments.
-
-=> If a name is given as input in stats, it checks if the name matches specialized file names and calls the main function with input, output, concept and stat values as arguments.
-
-=> Otherwise program terminates with the respective error message. 
+=> If the output location exists, then the code proceeds otherwise sends error message and stops.
+ 
 
 main(input,output,concepts,stats)
 ---------------------------------
 
 => Prints the output folder locations
 
-=> Open the stats file in write mode
+=> Open the stats file in write mode if the stat argument is a file name.
 
 => Iterates through the list of concept inputs and calls the imported find_syn() function to get a list of synonyms. Creates a single list of synonyms for all list of concepts.
 
@@ -205,7 +199,7 @@ main(input,output,concepts,stats)
 
 => Add the output location to the new redacted file and open it in write mode.
 
-=> Write the new file name into stats file
+=> Write the new file name into stats file if the stat argument is a file name otherwise prints it using stdout or stderr write function to command line.
 
 => It calls imported function redacted_sentence which returns the the redacted sentence with count of no. of differnt values that were redacted.
 
@@ -215,9 +209,9 @@ main(input,output,concepts,stats)
 
 => Close the file
 
-=> Write the total count of redacted terms and their type for each file into the stats file
+=> Write the total count of redacted terms and their type for each file into the stats file if the stat argument is a file name otherwise prints it using stdout or stderr write function to command line.
 
-=> Close the stats file
+=> Close the stats file if the stat argument is a file name.
 
 
 Test Cases
