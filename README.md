@@ -218,6 +218,26 @@ main(input,output,concepts,stats)
 => Close the stats file if the stat argument is a file name.
 
 
+Stats File
+==========
+
+For each file the below format will be added to the output stats file
+
+Readacted Filename
+
+Total concept related words: count
+
+Total Phone Numbers: count
+
+Total Date: count
+
+Total Gender: count
+
+Total address: count
+
+Total Name: count
+
+
 Test Cases
 ==========
 
