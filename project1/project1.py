@@ -20,18 +20,15 @@ def input_file_name(type):
 
 def read_inputfiles(input):
     with open(input) as f:
-        
         try:
             data = f.read()
+            lines=data.replace('\n','. ')
+            sentences = list(map(str.strip, lines.split(". ")))
+            sentences = list(filter(None,sentences))
+            return(sentences)
+    #f.close()
         except:
-            print("Unlable to read file", input)
-            continue
-
-        lines=f.read().replace('\n','. ')
-        sentences = list(map(str.strip, lines.split(". ")))
-        sentences = list(filter(None,sentences))
-        return(sentences)
-    f.close()
+            print("Error while opening file: ",input)
 
 def redact_sentence(sentence,syn_list,flags):
     counter = 0
