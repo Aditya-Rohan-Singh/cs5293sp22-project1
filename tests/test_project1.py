@@ -41,5 +41,5 @@ def test_redact_sentence(input):
     for filename in input_files:
         list_sentences = project1.read_inputfiles(filename)
         for sentence in list_sentences:
-            redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = project1.redact_sentence(sentence,syn_list, flags)
+            redacted_sentence,count= project1.redact_sentence(sentence,syn_list, flags)
             assert len(redacted_sentence) > 0
