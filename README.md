@@ -91,6 +91,7 @@ Postal address are very difficult to pindown on what could or what could not be 
 Name
 ----
 All name types that spacy function tokenzie classifies as "Person" as entitype type is considered a name and redacted. There is some issue here as same name is being redacted and not redacted as well in the same email file. Spaces between names are not removed after being redacted.
+
 Input
 ------
 Multiple input file types can be given. It is considered that the input file type will have an extension. This is used to create the output redacted file names. Even without extension there should not be an issue.
