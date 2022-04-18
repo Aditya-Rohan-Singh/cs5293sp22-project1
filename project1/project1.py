@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen as uReq
 from urllib.error import HTTPError
 import en_core_web_md
+import sys
 
 warnings.filterwarnings(
     "ignore",
