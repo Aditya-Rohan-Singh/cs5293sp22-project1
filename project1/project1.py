@@ -110,18 +110,20 @@ def find_syn(word):
     stripped_string = word.strip()
     fixed_string = stripped_string.replace(" ", "_")
     my_url = f'https://thesaurus.plus/synonyms/{fixed_string}'
-
-    uClient = uReq(my_url)
-    page_html = uClient.read()
-    uClient.close()
-
-    page_soup = soup(page_html, "html.parser")
-    word_boxes = page_soup.find("ul", {"class": "list paper"})
-    results = word_boxes.find_all("div", "list_item")
-    syn_list = []
-    for result in results:
-        test = result.text.split('   ')
-        string = re.sub('^ ','',test[1])
-        syn_list.append(string)
-    return(syn_list)
+    syn_list = []    
+    try:
+        uClient = uReq(my_url)
+        page_html = uClient.read()
+        uClient.close()
+        page_soup = soup(page_html, "html.parser")
+        word_boxes = page_soup.find("ul", {"class": "list paper"})
+        results = word_boxes.find_all("div", "list_item")
+        syn_list = []
+        for result in results:
+            test = result.text.split('   ')
+            string = re.sub('^ ','',test[1])
+            syn_list.append(string)
+        return(syn_list)
+    except URLError as ue:
+        sys.stderr.write("The Server Could Not be Found")
 
