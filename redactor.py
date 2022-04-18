@@ -43,6 +43,8 @@ def main(input,output,concepts,stats,flags):
                 if len(list_sentences) == 0:
                     print("Empty File. No Redaction Needed\n\n")
                 else:
+                    if(output[-1]=='/'):
+                        output = output[:-1]
                     new_filename = new_filename.split('/')[-1]
                     file_location = output + "/" + new_filename
                     print(file_location)
