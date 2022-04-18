@@ -130,7 +130,9 @@ def find_syn(word):
             test = result.text.split('   ')
             string = re.sub('^ ','',test[1])
             syn_list.append(string)
-        return(syn_list)
+        i = 0
+        #return(syn_list)
     except URLError as ue:
         sys.stderr.write("The Server Could Not be Found")
 
+    return(syn_list)
