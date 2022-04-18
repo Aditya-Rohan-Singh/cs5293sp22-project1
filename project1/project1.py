@@ -50,6 +50,7 @@ def redact_sentence(sentence,syn_list,flags):
     #Remove 10 digit phone number
         # for fromat xxxxxxxxxx
         if(flags[2] == 1):
+            
             sentence, count = re.subn(r'\d{10}','\u2588',sentence)
             stats_count[1] = stats_count[1] + count
         
@@ -60,7 +61,8 @@ def redact_sentence(sentence,syn_list,flags):
         #for format (xxx)-xxx-xxxx
             sentence,count = re.subn(r'[(]\d{3}[)]-\d{3}-\d{4}','\u2588',sentence)
             stats_count[1] = stats_count[1] + count
-    
+        #
+
         #Remove dates
         if(flags[1] == 1):
             matches = search_dates(sentence)
@@ -92,6 +94,10 @@ def redact_sentence(sentence,syn_list,flags):
                     redacted_sentence.append('\u2588')
                     redacted_sentence.append(' ')
                     stats_count[5] = stats_count[5] + 1
+                elif token.ent_type_ == 'GPE' or token.ent_type_ == 'LOC':
+                    redacted_sentence.append('\u2588')
+                    redacted_sentence.append(' ')
+                    stats_count[4] = stats_count[4] + 1
                 else:
                     redacted_sentence.append(token.text)
                     redacted_sentence.append(' ')
