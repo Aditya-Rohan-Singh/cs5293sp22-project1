@@ -8,6 +8,10 @@ from urllib.request import urlopen as uReq
 from urllib.error import HTTPError
 import en_core_web_md
 import sys
+import nltk
+from nltk.corpus import wordnet
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 warnings.filterwarnings(
     "ignore",
@@ -39,7 +43,6 @@ def redact_sentence(sentence,syn_list,flags):
     #Redacting concepts
     count_concept = 0
     for word in syn_list:
-        #sentence = re.sub(word,'\u2588',sentence)
         lenconcept = re.findall(word,sentence)
         if (len(lenconcept) > 0):
             counter = 1
@@ -74,12 +77,17 @@ def redact_sentence(sentence,syn_list,flags):
 
         #Remove gender related terms
         if(flags[3] == 1):
-            gender_terms=['him','her','is','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
-            for term in gender_terms:
-                lengender = re.findall(r"\b" + re.escape(term) + r"\b", sentence.lower())
-                if (len(lengender) > 0):
-                    sentence,count = re.subn(r"\b" + re.escape(term) + r"\b",'\u2588',sentence.lower())
-                    stats_count[3] = stats_count[3] + count
+            gender_terms=['him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
+            reg = re.compile(r"\b(?:(" + "s?)|(".join(gender_terms) + r"))\b", flags=re.I)
+            match = reg.findall(sentence)
+            if match:
+                for m in match[0]:
+                    if(len(m)>1):
+                        print(m)
+                        red = ''
+                        red = '\u2588'*len(m)
+                        sentence,count = re.subn(m,red,sentence)
+                        stats_count[3] = stats_count[3] + count
         
         #Remove address
         if(flags[4]==1):
@@ -92,26 +100,26 @@ def redact_sentence(sentence,syn_list,flags):
             redacted_sentence = []
             for token in doc:
                 if token.ent_type_ == 'PERSON' or token.ent_type == 'ORG':
-                    redacted_sentence.append('\u2588')
+                    for i in range(len(token)):
+                        redacted_sentence.append('\u2588')
                     redacted_sentence.append(' ')
                     stats_count[5] = stats_count[5] + 1
-                elif token.ent_type_ == 'GPE' or token.ent_type_ == 'LOC':
-                    redacted_sentence.append('\u2588')
-                    redacted_sentence.append(' ')
-                    stats_count[4] = stats_count[4] + 1
                 else:
                     redacted_sentence.append(token.text)
                     redacted_sentence.append(' ')
             sentence = "".join(redacted_sentence)
 
-        #print(stats_count)
         return(sentence,stats_count)
-        #return(sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name)
     else:
-        sentence = '\u2588'
-        #print(stats_count)
-        return(sentence,stats_count)
-        #return(sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name)
+        new_sentence = ''
+        for i in sentence:
+            if(i!='\n'):
+                new_sentence = new_sentence + '\u2588'
+            else:
+                new_sentence = new_sentence + ' '
+        #print(new_sentence)
+        
+        return(new_sentence,stats_count)
 
 def find_syn(word):
     stripped_string = word.strip()
@@ -132,7 +140,11 @@ def find_syn(word):
             syn_list.append(string)
         i = 0
         #return(syn_list)
-    except URLError as ue:
+    except OSError as ue:
         sys.stderr.write("The Server Could Not be Found")
+    
+    for syn in wordnet.synsets(word):
+        for l in syn.lemmas():
+            syn_list.append(l.name())
 
     return(syn_list)
