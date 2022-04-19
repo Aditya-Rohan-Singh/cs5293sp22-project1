@@ -57,17 +57,24 @@ def redact_sentence(sentence,syn_list,flags):
             date_patterns = ['\d{10}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{7}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*?\d{4}','\d{3}[-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*\d{4}','\d{3} \d{3} \d{4}']
             reg1 = re.compile(r"(?:(" + ")|(".join(date_patterns) + r"))")
             match1 = reg1.findall(sentence)
-            if match1:
+            if len(match1) > 0:
                 for m in match1[0]:
                     if(len(m)>1):
-                        red = re.sub(r'\d','\u2588',m)
-                        red1 = '' 
-                        for i in range(len(m)):
-                            red1 = red1 + "\u2588"
-                        print(m,red1,len(m))
+                        red1 = '\u2588'*len(m) 
                         sentence, count = re.subn(m,red1,sentence)
                         stats_count[1] = stats_count[1] + 1
         
+
+        if(flags[4]==1):
+            #address_patterns = ['\d{1,6}\s(?:[A-Za-z#]+(,)?\s){1,8}(#)?(\d{1,6})\s']
+            address_patterns = ['\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}']
+            reg3 = re.compile(r"((" + ")|(".join(address_patterns) + r"))", flags=re.I)
+            match2 = reg3.findall(sentence)
+            if match2:
+                for m in match2[0]:
+                    if(len(m)!=0):
+                        print(m)
+                        stats_count[4] = stats_count[4] + 1
 
         #Remove dates
         if(flags[1] == 1):
@@ -80,10 +87,10 @@ def redact_sentence(sentence,syn_list,flags):
 
         #Remove gender related terms
         if(flags[3] == 1):
-            gender_terms=['him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
-            reg = re.compile(r"\b(?:(" + "s?)|(".join(gender_terms) + r"))\b", flags=re.I)
+            gender_terms=['chairwoman','chairman','lady','lord','goddess','god','herione','hero','fiancee','fiance','widow','widower','women','princess','prince','queen','king','herself','himself','grandmom','grandma','grandpa','bride','groom','sir','maam','ma','pa','granddaughter','grandmother','grandfather','brother','sister','gentleman','gentlemen','gentlewoman','girlfriend','boyfriend','spokesmen','spokeswoman','spokesman','guy','men','grandson','him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
+            reg = re.compile(r"\b(?:(" + "(')?s?)|(".join(gender_terms) + r"))\b", flags=re.I)
             match = reg.findall(sentence)
-            if match:
+            if len(match) > 0:
                 for m in match[0]:
                     if(len(m)>1):
                         red = ''
@@ -91,29 +98,20 @@ def redact_sentence(sentence,syn_list,flags):
                         sentence,count = re.subn(m,red,sentence)
                         stats_count[3] = stats_count[3] + count
         
-        #Remove address
-        if(flags[4]==1):
-            sentence, count = re.subn(r'\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}',"\u2588",sentence)
-            stats_count[4] = stats_count[4] + count
-
         #Removes names
         if(flags[0]==1):
             doc = nlp(sentence)
-            redacted_sentence = []
-            for token in doc:
-                if token.ent_type_ == 'PERSON' or token.ent_type == 'ORG':
-                    rep = '\u2588'*len(token)
-                    sentence,count = re.subn(token.text,rep,sentence)
-                   # for i in range(len(token)):
-                        
-                    #    redacted_sentence.append('\u2588')
-                   # redacted_sentence.append(' ')
+            for token in doc.ents:
+                if token.label_ == 'PERSON':
+                    rep = '\u2588'*len(token.text)
+                    text = token.text
+                    sentence,count = re.subn(text,rep,sentence)
                     stats_count[5] = stats_count[5] + count
-                #else:
-                    #redacted_sentence.append(token.text)
-                    #redacted_sentence.append(' ')
-            #sentence = "".join(redacted_sentence)
-
+                elif token.label_ == 'GPE':
+                    text = token.text
+                    rep = '\u2588'*len(token.text)
+                    sentence,count = re.subn(text,rep,sentence)
+                    stats_count[4] = stats_count[4] + count
         return(sentence,stats_count)
     else:
         new_sentence = ''

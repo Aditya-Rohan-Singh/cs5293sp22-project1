@@ -5,4 +5,6 @@
 * Added nltk wordnet in find_syn() function to cover more words for concept.
 * Changed Gender regex to handle plural words and manage case sensitivity. 
 * Added more regex to cover phone number formats.
-* 
+* Changed name compairson from ent_type to label_ using spacy.
+* Changed location of address redaction to before dateparser as dateparser consider 4 digits numbers as date and redacts them.
+ 
