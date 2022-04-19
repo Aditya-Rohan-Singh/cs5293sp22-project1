@@ -54,25 +54,28 @@ def redact_sentence(sentence,syn_list,flags):
     #Remove 10 digit phone number
         # for fromat xxxxxxxxxx
         if(flags[2] == 1):
-            
-            sentence, count = re.subn(r'\d{10}','\u2588',sentence)
-            stats_count[1] = stats_count[1] + count
+            date_patterns = ['\d{10}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{7}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*?\d{4}','\d{3}[-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*\d{4}','\d{3} \d{3} \d{4}']
+            reg1 = re.compile(r"(?:(" + ")|(".join(date_patterns) + r"))")
+            match1 = reg1.findall(sentence)
+            if match1:
+                for m in match1[0]:
+                    if(len(m)>1):
+                        red = re.sub(r'\d','\u2588',m)
+                        red1 = '' 
+                        for i in range(len(m)):
+                            red1 = red1 + "\u2588"
+                        print(m,red1,len(m))
+                        sentence, count = re.subn(m,red1,sentence)
+                        stats_count[1] = stats_count[1] + 1
         
-        #for fromat (xxx)-xxxxxxx
-            sentence, count = re.subn(r'[(]\d{3}[)]-\d{7}','\u2588',sentence)
-            stats_count[1] = stats_count[1] + count
-
-        #for format (xxx)-xxx-xxxx
-            sentence,count = re.subn(r'[(]\d{3}[)]-\d{3}-\d{4}','\u2588',sentence)
-            stats_count[1] = stats_count[1] + count
-        #
 
         #Remove dates
         if(flags[1] == 1):
             matches = search_dates(sentence)
             if matches is not None:
                 for x in matches:
-                    sentence = re.sub(x[0],'\u2588',sentence)
+                    rep = '\u2588'*len(x[0])
+                    sentence = re.sub(x[0],rep,sentence)
                 stats_count[2] = len(matches)
 
         #Remove gender related terms
@@ -83,7 +86,6 @@ def redact_sentence(sentence,syn_list,flags):
             if match:
                 for m in match[0]:
                     if(len(m)>1):
-                        print(m)
                         red = ''
                         red = '\u2588'*len(m)
                         sentence,count = re.subn(m,red,sentence)
@@ -100,14 +102,17 @@ def redact_sentence(sentence,syn_list,flags):
             redacted_sentence = []
             for token in doc:
                 if token.ent_type_ == 'PERSON' or token.ent_type == 'ORG':
-                    for i in range(len(token)):
-                        redacted_sentence.append('\u2588')
-                    redacted_sentence.append(' ')
-                    stats_count[5] = stats_count[5] + 1
-                else:
-                    redacted_sentence.append(token.text)
-                    redacted_sentence.append(' ')
-            sentence = "".join(redacted_sentence)
+                    rep = '\u2588'*len(token)
+                    sentence,count = re.subn(token.text,rep,sentence)
+                   # for i in range(len(token)):
+                        
+                    #    redacted_sentence.append('\u2588')
+                   # redacted_sentence.append(' ')
+                    stats_count[5] = stats_count[5] + count
+                #else:
+                    #redacted_sentence.append(token.text)
+                    #redacted_sentence.append(' ')
+            #sentence = "".join(redacted_sentence)
 
         return(sentence,stats_count)
     else:

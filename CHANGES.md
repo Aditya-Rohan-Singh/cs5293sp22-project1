@@ -1,7 +1,8 @@
 #Changes
 
-* Replacing the redacted word with redacted block of similar length instead of 1 redacted block/
-* Added error handling in find_syn() function for beautiful soup.
+* Replacing the redacted word with redacted block of similar length instead of 1 redacted block for all substitutions.
+* Added error handling in find_syn() function for beautiful soup when parsing synonyms from web.
 * Added nltk wordnet in find_syn() function to cover more words for concept.
-* Added More entity type handing for Address in redact_sentence() function.
-* Changed Gender regex to handle plural and remove case sensitivity. 
+* Changed Gender regex to handle plural words and manage case sensitivity. 
+* Added more regex to cover phone number formats.
+* 
