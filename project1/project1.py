@@ -30,6 +30,7 @@ def read_inputfiles(input):
             lines=data.replace('\n','. ')
             sentences = list(map(str.strip, lines.split(". ")))
             sentences = list(filter(None,sentences))
+            print(len(sentences))
             return(sentences)
     #f.close()
         except:
@@ -64,17 +65,16 @@ def redact_sentence(sentence,syn_list,flags):
                         sentence, count = re.subn(m,red1,sentence)
                         stats_count[1] = stats_count[1] + 1
         
-
+        #Remove address
         if(flags[4]==1):
-            #address_patterns = ['\d{1,6}\s(?:[A-Za-z#]+(,)?\s){1,8}(#)?(\d{1,6})\s']
-            address_patterns = ['\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}']
-            reg3 = re.compile(r"((" + ")|(".join(address_patterns) + r"))", flags=re.I)
-            match2 = reg3.findall(sentence)
-            if match2:
-                for m in match2[0]:
+            address_patterns = '\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}'
+            match2 = re.findall(address_patterns,sentence)
+            if len(match2)>0:
+                for m in match2:
                     if(len(m)!=0):
-                        print(m)
-                        stats_count[4] = stats_count[4] + 1
+                        red = '\u2588'*len(m)
+                        sentence,count =re.subn(m,red,sentence)
+                        stats_count[4] = stats_count[4] + count
 
         #Remove dates
         if(flags[1] == 1):
@@ -87,16 +87,21 @@ def redact_sentence(sentence,syn_list,flags):
 
         #Remove gender related terms
         if(flags[3] == 1):
+            matches =[]
             gender_terms=['chairwoman','chairman','lady','lord','goddess','god','herione','hero','fiancee','fiance','widow','widower','women','princess','prince','queen','king','herself','himself','grandmom','grandma','grandpa','bride','groom','sir','maam','ma','pa','granddaughter','grandmother','grandfather','brother','sister','gentleman','gentlemen','gentlewoman','girlfriend','boyfriend','spokesmen','spokeswoman','spokesman','guy','men','grandson','him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
-            reg = re.compile(r"\b(?:(" + "(')?s?)|(".join(gender_terms) + r"))\b", flags=re.I)
-            match = reg.findall(sentence)
-            if len(match) > 0:
-                for m in match[0]:
-                    if(len(m)>1):
-                        red = ''
-                        red = '\u2588'*len(m)
-                        sentence,count = re.subn(m,red,sentence)
-                        stats_count[3] = stats_count[3] + count
+            #reg = re.compile(r"\b(?:(" + "(')?s?)|(".join(gender_terms) + r"))\b", flags=re.I)
+            for term in gender_terms:
+                reg=re.compile(r"\b((?:\s*("+term+r")(')*(s)*))\b",flags=re.I)
+                match = reg.findall(sentence)
+                if len(match) > 0:
+                    for m in match[0]:
+                        matches.append(m)
+            for m in matches:
+                if(len(m)>1):
+                    red = ''
+                    red = '\u2588'*len(m)
+                    sentence,count = re.subn(m,red,sentence)
+                    stats_count[3] = stats_count[3] + count
         
         #Removes names
         if(flags[0]==1):
@@ -107,11 +112,6 @@ def redact_sentence(sentence,syn_list,flags):
                     text = token.text
                     sentence,count = re.subn(text,rep,sentence)
                     stats_count[5] = stats_count[5] + count
-                elif token.label_ == 'GPE':
-                    text = token.text
-                    rep = '\u2588'*len(token.text)
-                    sentence,count = re.subn(text,rep,sentence)
-                    stats_count[4] = stats_count[4] + count
         return(sentence,stats_count)
     else:
         new_sentence = ''
@@ -120,7 +120,6 @@ def redact_sentence(sentence,syn_list,flags):
                 new_sentence = new_sentence + '\u2588'
             else:
                 new_sentence = new_sentence + ' '
-        #print(new_sentence)
         
         return(new_sentence,stats_count)
 
@@ -149,5 +148,4 @@ def find_syn(word):
     for syn in wordnet.synsets(word):
         for l in syn.lemmas():
             syn_list.append(l.name())
-
     return(syn_list)
