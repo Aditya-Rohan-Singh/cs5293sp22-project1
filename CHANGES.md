@@ -7,4 +7,6 @@
 * Added more regex to cover phone number formats.
 * Changed name compairson from ent_type to label_ using spacy.
 * Changed location of address redaction to before dateparser as dateparser consider 4 digits numbers as date and redacts them.
- 
+* Added 2 more test cases to check for different flags being passed:
+	* Testing for Dates, Phones, Genders, Address
+	* Testing for Names, Genders, Address

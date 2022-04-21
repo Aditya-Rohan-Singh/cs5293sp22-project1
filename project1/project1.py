@@ -30,7 +30,6 @@ def read_inputfiles(input):
             lines=data.replace('\n','. ')
             sentences = list(map(str.strip, lines.split(". ")))
             sentences = list(filter(None,sentences))
-            print(len(sentences))
             return(sentences)
     #f.close()
         except:
@@ -49,14 +48,14 @@ def redact_sentence(sentence,syn_list,flags):
             counter = 1
             count_concept = count_concept + len(lenconcept)
             stats_count[0] = stats_count[0] + len(lenconcept)
-    
+
     #If there are no concept words in the sentence.
     if(counter == 0):
     #Remove 10 digit phone number
         # for fromat xxxxxxxxxx
         if(flags[2] == 1):
             date_patterns = ['\d{10}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{7}','[(]\d{3}[)][-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*?\d{4}','\d{3}[-\.\s]*-[-\.\s]*\d{3}[-\.\s]*-[-\.\s]*\d{4}','\d{3} \d{3} \d{4}']
-            reg1 = re.compile(r"(?:(" + ")|(".join(date_patterns) + r"))")
+            reg1 = re.compile(r"\s*(?:(" + ")|(".join(date_patterns) + r"))")
             match1 = reg1.findall(sentence)
             if len(match1) > 0:
                 for m in match1[0]:
@@ -67,7 +66,7 @@ def redact_sentence(sentence,syn_list,flags):
         
         #Remove address
         if(flags[4]==1):
-            address_patterns = '\d{1,6}\s(?:[A-Za-z0-9#]+\s){0,7}(?:[A-Za-z0-9#]+,)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,)\s*[A-Z]{2}\s*\d{5}'
+            address_patterns = '(\d{1,6}[A-Za-z]?\s(?:[A-Za-z0-9#-]+\s){0,7}(?:[A-Za-z0-9#-]+,*)\s*(?:[A-Za-z]+\s){0,3}(?:[A-Za-z]+,*)\s*[A-Z]{2}\s*\d{4,5})'
             match2 = re.findall(address_patterns,sentence)
             if len(match2)>0:
                 for m in match2:
@@ -106,12 +105,20 @@ def redact_sentence(sentence,syn_list,flags):
         #Removes names
         if(flags[0]==1):
             doc = nlp(sentence)
+            for token in doc:
+                if token.ent_type_ == 'Person':
+                    rep ='\u2588'*len(token.text)
+                    text = token.text
+                    sentence, count = re.subn(text,rep,sentence)
+                    stats_count[5] = stats_count[5] + count
+
             for token in doc.ents:
                 if token.label_ == 'PERSON':
                     rep = '\u2588'*len(token.text)
                     text = token.text
                     sentence,count = re.subn(text,rep,sentence)
                     stats_count[5] = stats_count[5] + count
+        #print(stats_count)
         return(sentence,stats_count)
     else:
         new_sentence = ''
@@ -120,7 +127,7 @@ def redact_sentence(sentence,syn_list,flags):
                 new_sentence = new_sentence + '\u2588'
             else:
                 new_sentence = new_sentence + ' '
-        
+        #print(stats_count)
         return(new_sentence,stats_count)
 
 def find_syn(word):
