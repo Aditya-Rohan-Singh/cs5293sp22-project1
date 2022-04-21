@@ -155,4 +155,10 @@ def find_syn(word):
     for syn in wordnet.synsets(word):
         for l in syn.lemmas():
             syn_list.append(l.name())
+        for lemma in syn.hyponyms():
+            synm = lemma.lemma_names()
+            #print("synm",synm)
+            for x in synm:
+                syn_list.append(x)
+    #print(syn_list)
     return(syn_list)
