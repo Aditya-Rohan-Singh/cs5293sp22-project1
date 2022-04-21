@@ -7,7 +7,11 @@ working_directory = os.getcwd()
 project1_path = working_directory + '/project1'
 sys.path.append(project1_path)
 from project1 import project1
-#from project1 import input_file_name, read_inputfiles, redact_sentence, find_syn
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 def main(input,output,concepts,stats,flags):
     print("Output Folder Location:",output,"\n\n") 
@@ -16,11 +20,24 @@ def main(input,output,concepts,stats,flags):
         std = open(stats,"w")
     
     #Creating Concept word list
-    syn_list = []
-    syn_list.extend(concepts)
-    for concept in concepts:
-        syn_list.extend(project1.find_syn(concept))
-    
+    syn_list=[]
+    concept_word = []
+    stop_words = set(stopwords.words('english'))
+    word_tokens = word_tokenize(concepts[0])
+    if len(word_tokens) > 1:
+        for w in word_tokens:
+            if w not in stop_words:
+                concept_word.append(w)
+        for word in concept_word:
+            syn_list.append(word)
+            syn_list.extend(project1.find_syn(word))
+    else:
+        #syn_list = []
+        syn_list.extend(concepts)
+        for concept in concepts:
+            syn_list.extend(project1.find_syn(concept))
+    print(syn_list)
+
     #Loop to cycle through multiple input types
     for file_type in input:
         input_files=project1.input_file_name(file_type)
@@ -53,7 +70,6 @@ def main(input,output,concepts,stats,flags):
                         std.write(new_filename)
                         std.write("\n-----------------\n")
                     for single_sentence in list_sentences:
-                        #redacted_sentence,count_concept,count_phone,count_date,count_gender,count_address,count_name = redact_sentence(single_sentence,syn_list,flags)
                         redacted_sentence, stats_count = project1.redact_sentence(single_sentence,syn_list,flags)
                         write_file.write(redacted_sentence)
                         write_file.write('\n')
