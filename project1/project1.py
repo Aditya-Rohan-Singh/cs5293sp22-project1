@@ -89,11 +89,11 @@ def redact_sentence(sentence,syn_list,flags):
         #Remove gender related terms
         if(flags[3] == 1):
             matches =[]
-            gender_terms=['chairwoman','chairman','lady','lord','goddess','god','herione','hero','fiancee','fiance','widow','widower','women','princess','prince','queen','king','herself','himself','grandmom','grandma','grandpa','bride','groom','sir','maam','ma','pa','granddaughter','grandmother','grandfather','brother','sister','gentleman','gentlemen','gentlewoman','girlfriend','boyfriend','spokesmen','spokeswoman','spokesman','guy','men','grandson','him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
+            gender_terms=['Girl','chairwoman','chairman','lady','lord','goddess','god','herione','hero','fiancee','fiance','widow','widower','women','princess','prince','queen','king','herself','himself','grandmom','grandma','grandpa','bride','groom','sir','maam','ma','pa','granddaughter','grandmother','grandfather','brother','sister','gentleman','gentlemen','gentlewoman','girlfriend','boyfriend','spokesmen','spokeswoman','spokesman','guy','men','grandson','him','her','his','male','female','mother','father','aunt','uncle','niece','nephew','son','daughter','he','she','man','woman','boy','girl','husband','wife','actor','actress']
             #reg = re.compile(r"\b(?:(" + "(')?s?)|(".join(gender_terms) + r"))\b", flags=re.I)
             for term in gender_terms:
-                reg=re.compile(r"\b((?:\s*("+term+r")(')*(s)*))\b",flags=re.I)
-                match = reg.findall(sentence)
+                reg=re.compile(r"\b((("+term+r")(')?(s)*))\b",flags=re.I)
+                match = reg.findall(sentence.lower())#,re.IGNORECASE)
                 if len(match) > 0:
                     for m in match[0]:
                         matches.append(m)

@@ -14,7 +14,8 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 def main(input,output,concepts,stats,flags):
-    print("Output Folder Location:",output,"\n\n") 
+    string = "Output Folder Location:" + output + "\n\n"
+    sys.stdout.write(string)
     #Opening Stats file
     if(stats != 'stdout' and stats != 'stderr'):
         std = open(stats,"w")
@@ -43,49 +44,48 @@ def main(input,output,concepts,stats,flags):
 
         #If case if there are no files under the input type
         if len(input_files) == 0:
-            print("No files found under input : ",file_type)
-            print("--------------------------\n\n")
+            string = "No files found under input : " + file_type
+            sys.stdout.write(string)
+            sys.stdout.write("\n--------------------------\n\n")
         else:
-            print("Files found under input type: ",file_type)
-            print("-----------------------------")
+            string = "Files found under input type: " + file_type
+            sys.stdout.write(string)
+            sys.stdout.write("\n-----------------------------")
             #Loop to cycle through each text file
             for filename in input_files:
-                print("\n\nFilename: ",filename)
+                string = "\n\nFilename: " + filename
+                sys.stdout.write(string)
                 final_count = [0,0,0,0,0,0]
 
                 new_filename = filename + '.redacted'
                 list_sentences,raw_data = project1.read_inputfiles(filename)
                 
                 if len(list_sentences) == 0:
-                    print("Empty File. No Redaction Needed\n\n")
+                    sys.stdout.write("Empty File. No Redaction Needed\n\n")
                 else:
                     if(output[-1]=='/'):
                         output = output[:-1]
                     new_filename = new_filename.split('/')[-1]
                     file_location = output + "/" + new_filename
-                    print(file_location)
                     write_file = open(file_location,"w")
                     if(stats!="stdout" and stats!="stderr"):
                         std.write(new_filename)
                         std.write("\n-----------------\n")
                     for single_sentence in list_sentences:
                         redacted_sentence, stats_count = project1.redact_sentence(single_sentence,syn_list,flags)
-                        #print(single_sentence,redacted_sentence)
                         raw_data = raw_data.replace(single_sentence,redacted_sentence)
-                        #raw_data=re.sub(r'\b('+single_sentence+r')\b',r'\b('+redacted_sentence+r')\b',raw_data)
-                        #write_file.write(redacted_sentence)
-                        #write_file.write('\n')
                         final_count[0] = final_count[0] + stats_count[0]
                         final_count[1] = final_count[1] + stats_count[1]
                         final_count[2] = final_count[2] + stats_count[2]
                         final_count[3] = final_count[3] + stats_count[3]
                         final_count[4] = final_count[4] + stats_count[4]
                         final_count[5] = final_count[5] + stats_count[5]
-                        #print(redacted_sentence)
                     write_file.write(raw_data)
                     write_file.write('\n')
                     write_file.close()
-                    print("Redacted File Name:",new_filename,"\n\n")
+                    string = "\nRedacted File Name:" + new_filename
+                    sys.stdout.write(string)
+                    sys.stdout.write("\n\n")
                     stringdata1 = "Total concept related words: " + str(final_count[0]) + "\n"
                     stringdata2 = "Total Phone Numbers: " + str(final_count[1]) + "\n"
                     stringdata3 = "Total Date: " + str(final_count[2]) + "\n"
