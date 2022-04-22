@@ -30,7 +30,7 @@ def read_inputfiles(input):
             lines=data.replace('\n','. ')
             sentences = list(map(str.strip, lines.split(". ")))
             sentences = list(filter(None,sentences))
-            return(sentences)
+            return(sentences,data)
     #f.close()
         except:
             print("Error while opening file: ",input)
@@ -82,7 +82,7 @@ def redact_sentence(sentence,syn_list,flags):
                 for x in matches:
                     rep = '\u2588'*len(x[0])
                     sentence = re.sub(x[0],rep,sentence)
-                stats_count[2] = len(matches)
+                    stats_count[2] = stats_count[2] + 1
 
         #Remove gender related terms
         if(flags[3] == 1):
@@ -157,7 +157,6 @@ def find_syn(word):
             syn_list.append(l.name())
         for lemma in syn.hyponyms():
             synm = lemma.lemma_names()
-            #print("synm",synm)
             for x in synm:
                 syn_list.append(x)
     #print(syn_list)
