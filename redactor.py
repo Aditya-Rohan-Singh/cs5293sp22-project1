@@ -36,7 +36,6 @@ def main(input,output,concepts,stats,flags):
         syn_list.extend(concepts)
         for concept in concepts:
             syn_list.extend(project1.find_syn(concept))
-    print(syn_list)
 
     #Loop to cycle through multiple input types
     for file_type in input:
@@ -55,7 +54,7 @@ def main(input,output,concepts,stats,flags):
                 final_count = [0,0,0,0,0,0]
 
                 new_filename = filename + '.redacted'
-                list_sentences = project1.read_inputfiles(filename)
+                list_sentences,raw_data = project1.read_inputfiles(filename)
                 
                 if len(list_sentences) == 0:
                     print("Empty File. No Redaction Needed\n\n")
@@ -71,8 +70,11 @@ def main(input,output,concepts,stats,flags):
                         std.write("\n-----------------\n")
                     for single_sentence in list_sentences:
                         redacted_sentence, stats_count = project1.redact_sentence(single_sentence,syn_list,flags)
-                        write_file.write(redacted_sentence)
-                        write_file.write('\n')
+                        #print(single_sentence,redacted_sentence)
+                        raw_data = raw_data.replace(single_sentence,redacted_sentence)
+                        #raw_data=re.sub(r'\b('+single_sentence+r')\b',r'\b('+redacted_sentence+r')\b',raw_data)
+                        #write_file.write(redacted_sentence)
+                        #write_file.write('\n')
                         final_count[0] = final_count[0] + stats_count[0]
                         final_count[1] = final_count[1] + stats_count[1]
                         final_count[2] = final_count[2] + stats_count[2]
@@ -80,6 +82,7 @@ def main(input,output,concepts,stats,flags):
                         final_count[4] = final_count[4] + stats_count[4]
                         final_count[5] = final_count[5] + stats_count[5]
                         #print(redacted_sentence)
+                    write_file.write(raw_data)
                     write_file.write('\n')
                     write_file.close()
                     print("Redacted File Name:",new_filename,"\n\n")

@@ -9,6 +9,8 @@
 * project1.py: redact_sentence(): Changed location of address redaction to before dateparser as dateparser consider 4 digits numbers as date and redacts them.
 * redactor.py: main(): Added code to handle string as input for concept. It strips the string into tokens, removes stopwords and appends all related words into a list of words that is used for comparison. 
 * project1.py: find_syn(): Added hyponyms() for all words being passed to find_sym() to handle more concept words. 
+* redactor.py: main(): Writing redacted data as a whole into output file instead of sentences to fix formatting. 
+* project1.py: read_files(): Returns raw data as well to the redactor.main().
 
 * Just to clarify, I'm using flags to call reduction process. [Name,Dates,Phones,Genders,Address] is the list of flags. If the value is 1 then the flag is being called, if 0 then not being called.
 * test_project1.py: Added 2 more test cases to check for different flags being passed. Comparing the count of redacted words with expected count of redacted words to test redaction process.

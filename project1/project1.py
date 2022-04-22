@@ -27,6 +27,7 @@ def read_inputfiles(input):
     with open(input) as f:
         try:
             data = f.read()
+            #data = re.sub("?:(\)", "\ ",data)
             lines=data.replace('\n','. ')
             sentences = list(map(str.strip, lines.split(". ")))
             sentences = list(filter(None,sentences))
@@ -61,7 +62,8 @@ def redact_sentence(sentence,syn_list,flags):
                 for m in match1[0]:
                     if(len(m)>1):
                         red1 = '\u2588'*len(m) 
-                        sentence, count = re.subn(m,red1,sentence)
+                        sentence = sentence.replace(m,red1)
+                        #sentence, count = re.subn(m,red1,sentence)
                         stats_count[1] = stats_count[1] + 1
         
         #Remove address
